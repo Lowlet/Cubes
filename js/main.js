@@ -76,7 +76,7 @@ function init()
     dracoLoader.setDecoderConfig({ type: 'js' });
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
 
-    new EXRLoader().load('../tex/studiocopy.exr', (texture) =>
+    new EXRLoader().load('./tex/studiocopy.exr', (texture) =>
     {
         texture.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -85,7 +85,7 @@ function init()
 
         const gltfLoader = new GLTFLoader(loadingManager);
         gltfLoader.setDRACOLoader(dracoLoader);
-        gltfLoader.load('../mdl/bg_cubes.glb', (gltf) =>
+        gltfLoader.load('./mdl/bg_cubes.glb', (gltf) =>
         {
             scene.add(gltf.scene);
             console.log(gltf.scene);
