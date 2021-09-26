@@ -76,7 +76,7 @@ function init()
     dracoLoader.setDecoderConfig({ type: 'js' });
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
 
-    new EXRLoader().load('./tex/studiocopy.exr', (texture) =>
+    new EXRLoader().load('../tex/studiocopy.exr', (texture) =>
     {
         texture.mapping = THREE.EquirectangularReflectionMapping;
 
