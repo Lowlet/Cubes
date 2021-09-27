@@ -58,7 +58,7 @@ function init()
     controls.dragToLook = true;
 
     composer = new EffectComposer(renderer);
-    ssrPass = new SSRPass({
+/*     ssrPass = new SSRPass({
         renderer,
         scene,
         camera,
@@ -73,7 +73,7 @@ function init()
     ssrPass.maxDistance = 1;
     ssrPass.opacity = 0.3;
 
-    composer.addPass(ssrPass);
+    composer.addPass(ssrPass); */
 
     const loadingManager = new THREE.LoadingManager();
 
@@ -140,10 +140,10 @@ function update()
 
     //console.log(camera.position);
     //console.log(camera.rotation);
-    console.log(renderer.info.render);
+    //console.log(renderer.info.render);
 
-    composer.render();
-    //renderer.render(scene, camera);
+    //composer.render();
+    renderer.render(scene, camera);
 }
 
 function onWindowResize()
