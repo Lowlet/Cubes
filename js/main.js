@@ -6,9 +6,10 @@ import { EXRLoader } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/lo
 import { EffectComposer } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/EffectComposer.js';
 import { SSRPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/SSRPass.js';
 import { FlyControls } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/FlyControls.js';
-import * as TWEEN from 'https://cdn.skypack.dev/tween.js@16.6.0/src/Tween.js'
+import Stats from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/libs/stats.module.js';
+import * as TWEEN from 'https://cdn.skypack.dev/tween.js@16.6.0/src/Tween.js';
 
-let clock, scene, camera, renderer, controls, mixer, composer, ssrPass;
+let clock, scene, camera, renderer, controls, mixer, composer, ssrPass, stats;
 const selects = [];
 const positions = [
     [3.2, 11.5, 10.6],
@@ -31,7 +32,8 @@ function init()
     clock = new THREE.Clock()
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a4e4a, 0.05);
+    scene.background = new THREE.Color(0x0a4e4a);
+    //scene.fog = new THREE.FogExp2(0x0a4e4a, 0.05);
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(3.2, 11.5, 10.6);
@@ -44,6 +46,9 @@ function init()
     renderer.toneMappingExposure = 0.5;
     renderer.outputEncoding = THREE.sRGBEncoding;
     document.body.appendChild(renderer.domElement);
+
+    stats = new Stats();
+    document.body.appendChild(stats.dom);
 
     controls = new FlyControls(camera, renderer.domElement);
     controls.movementSpeed = 20;
@@ -65,8 +70,8 @@ function init()
     });
     ssrPass.thickness = 0.02;
     ssrPass.infiniteThick = false;
-    ssrPass.maxDistance = 5;
-    ssrPass.opacity = 1;
+    ssrPass.maxDistance = 1;
+    ssrPass.opacity = 0.3;
 
     composer.addPass(ssrPass);
 
@@ -80,12 +85,11 @@ function init()
     {
         texture.mapping = THREE.EquirectangularReflectionMapping;
 
-        scene.background = new THREE.Color(0x0a4e4a);
         scene.environment = texture;
 
         const gltfLoader = new GLTFLoader(loadingManager);
         gltfLoader.setDRACOLoader(dracoLoader);
-        gltfLoader.load('./mdl/bg_cubes.glb', (gltf) =>
+        gltfLoader.load('./mdl/bg_cubes2.glb', (gltf) =>
         {
             scene.add(gltf.scene);
             console.log(gltf.scene);
@@ -131,12 +135,15 @@ function update()
 
     if (mixer) mixer.update(delta);
     controls.update(delta);
+    stats.update();
     TWEEN.update();
 
     //console.log(camera.position);
     //console.log(camera.rotation);
+    console.log(renderer.info.render);
 
     composer.render();
+    //renderer.render(scene, camera);
 }
 
 function onWindowResize()
