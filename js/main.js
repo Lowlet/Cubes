@@ -24,6 +24,7 @@ const rotations = [
     [-2.6, -0.4, -2.9]
 ];
 let currPosition = 0;
+let isTweaning;
 
 init();
 update();
@@ -46,8 +47,8 @@ function init()
     renderer.physicallyCorrectLights = true;
     document.body.appendChild(renderer.domElement);
 
-    stats = new Stats();
-    document.body.appendChild(stats.dom);
+    //stats = new Stats();
+    //document.body.appendChild(stats.dom);
 
     controls = new FlyControls(camera, renderer.domElement);
     controls.movementSpeed = 20;
@@ -80,13 +81,13 @@ function init()
     dracoLoader.setDecoderConfig({ type: 'js' });
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
 
-    new EXRLoader().load('./tex/studio.exr', (texture) =>
+    new EXRLoader().load('./tex/studio2.exr', (texture) =>
     {
         texture.mapping = THREE.EquirectangularReflectionMapping;
 
-        scene.background = new THREE.Color(0x0a4e4a);
+        scene.background = new THREE.Color(0x3d9b97);
         scene.environment = texture;
-        scene.fog = new THREE.FogExp2(0x0a4e4a, 0.05);
+        scene.fog = new THREE.FogExp2(0x3d9b97, 0.05);
 
         const gltfLoader = new GLTFLoader(loadingManager);
         gltfLoader.setDRACOLoader(dracoLoader);
@@ -118,11 +119,27 @@ function init()
     {
     }
 
-    document.body.onmousedown = () =>
+/*     document.body.onmousedown = () =>
     {
         currPosition = (currPosition + 1) % 3;
         tweenCamera(camera, positions[currPosition], rotations[currPosition], 1500);
-    }
+    } */
+
+    window.addEventListener('wheel', event =>
+    {
+        if(isTweaning) return;
+
+        if (event.deltaY > 0)
+        {
+            currPosition = (currPosition + 1) % 3;
+        }
+        else if (event.deltaY < 0)
+        {
+            currPosition = (((currPosition - 1) % 3) + 3) % 3;
+        }
+        isTweaning = true;
+        tweenCamera(camera, positions[currPosition], rotations[currPosition], 1500);
+    });
 
     window.addEventListener('resize', onWindowResize);
 }
@@ -134,8 +151,8 @@ function update()
     const delta = clock.getDelta();
 
     if (mixer) mixer.update(delta);
-    controls.update(delta);
-    stats.update();
+    //controls.update(delta);
+    //stats.update();
     TWEEN.update();
 
     //console.log(camera.position);
@@ -161,7 +178,10 @@ function tweenCamera(camera, position, rotation, duration)
         x: position[0],
         y: position[1],
         z: position[2]
-    }, duration).easing(TWEEN.Easing.Quadratic.InOut).start();
+    }, duration).easing(TWEEN.Easing.Quadratic.InOut).onComplete(()=>
+    {
+        isTweaning = false;
+    }).start();
 
     new TWEEN.Tween(camera.rotation).to({
         x: rotation[0],
